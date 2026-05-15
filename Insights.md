@@ -143,3 +143,4 @@ LCD  →  AMOLED  →  OLED
 
 ---
 
+**Dataset:** [Smartphone price prediction](https://www.kaggle.com/datasets/sharmajicoder/smartphones-specification-and-prices/data)
