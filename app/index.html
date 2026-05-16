@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Price Predictor | AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .btn-predict { background-color: #007bff; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card p-4">
+            <h2 class="text-center mb-4"> توقع سعر الموبايل بالذكاء الاصطناعي</h2>
+            <form id="predictForm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">البراند (Brand)</label>
+                        <input type="text" id="brand" class="form-control" placeholder="Samsung" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">المعالج (Chipset)</label>
+                        <input type="text" id="chipset" class="form-control" placeholder="Snapdragon 8 Gen 2" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">نوع الشاشة</label>
+                        <input type="text" id="display_type" class="form-control" placeholder="AMOLED" required>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">الرامات (RAM GB)</label>
+                        <input type="number" id="ram_gb" class="form-control" placeholder="12" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">البطارية (mAh)</label>
+                        <input type="number" id="battery_mah" class="form-control" placeholder="5000" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">CPU Score (Antutu)</label>
+                        <input type="number" id="cpu_score" class="form-control" placeholder="1200000" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">GPU Score</label>
+                        <input type="number" id="gpu_score" class="form-control" placeholder="500000" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">الكاميرا الخلفية (MP)</label>
+                        <input type="number" id="rear_camera_mp" class="form-control" placeholder="108" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">معدل التحديث (Hz)</label>
+                        <input type="number" id="refresh_rate_hz" class="form-control" placeholder="120" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">مساحة خارجية (0 أو 1)</label>
+                        <select id="expandable_storage" class="form-select">
+                            <option value="0">لا يدعم</option>
+                            <option value="1">يدعم</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" onclick="sendData()" class="btn btn-predict w-100 mt-4 py-3">توقع السعر  </button>
+            </form>
+
+            <div id="resultBox" class="mt-4 text-center d-none">
+                <div class="alert alert-success">
+                    <h4>السعر المتوقع: <span id="priceValue">0</span> روبية</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function sendData() {
+            const specs = {
+                brand: document.getElementById('brand').value,
+                chipset: document.getElementById('chipset').value,
+                display_type: document.getElementById('display_type').value,
+                ram_gb: parseInt(document.getElementById('ram_gb').value),
+                battery_mah: parseInt(document.getElementById('battery_mah').value),
+                cpu_score: parseInt(document.getElementById('cpu_score').value),
+                gpu_score: parseInt(document.getElementById('gpu_score').value),
+                rear_camera_mp: parseInt(document.getElementById('rear_camera_mp').value),
+                refresh_rate_hz: parseInt(document.getElementById('refresh_rate_hz').value),
+                expandable_storage: parseInt(document.getElementById('expandable_storage').value)
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(specs)
+                });
+                const result = await response.json();
+                
+                document.getElementById('priceValue').innerText = result.predicted_price.toLocaleString();
+                document.getElementById('resultBox').classList.remove('d-none');
+            } catch (error) {
+                alert("تأكد من تشغيل سيرفر FastAPI!");
+            }
+        }
+    </script>
+</body>
+</html>
